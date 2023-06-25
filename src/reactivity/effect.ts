@@ -1,7 +1,7 @@
 class ReactiveEffect {
   private _fn: any;
 
-  constructor(fn) {
+  constructor(fn, public scheduler?) {
     this._fn = fn;
   }
   run() {
@@ -33,15 +33,20 @@ export function trigger(target, key) {
   let dep = depsMap.get(key);
 
   for (const effect of dep) {
-    effect.run();
+    if (effect.scheduler) {
+      effect.scheduler();
+    } else {
+      effect.run();
+    }
   }
 }
 
 let activeEffect;
 // 避免硬编码
-export function effect(fn) {
+export function effect(fn, options: any = {}) {
   // fn
-  const _effect = new ReactiveEffect(fn);
+  const scheduler = options.scheduler;
+  const _effect = new ReactiveEffect(fn, scheduler);
 
   _effect.run();
   const runner = _effect.run.bind(_effect);
