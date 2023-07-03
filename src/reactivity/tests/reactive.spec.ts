@@ -1,9 +1,30 @@
-import { reactive } from "../reactive";
+import { reactive, readonly } from "../reactive";
+
 describe("reactive", () => {
   it("happy path", () => {
     const original = { foo: 1 };
     const observed = reactive(original);
     expect(observed).not.toBe(original);
     expect(observed.foo).toBe(1);
+  });
+});
+
+describe("readonly", () => {
+  it("should make nested values readonly", () => {
+    const original = { foo: 1, bar: { baz: 2 } };
+    const wrapped = readonly(original);
+    expect(wrapped).not.toBe(original);
+    expect(wrapped.foo).toBe(1);
+  });
+
+  // 期待强制更改readonly时，给出警告
+  it("should call console.warn when set", () => {
+    console.warn = jest.fn();
+    const user = readonly({
+      age: 10,
+    });
+
+    user.age = 11;
+    expect(console.warn).toHaveBeenCalled();
   });
 });

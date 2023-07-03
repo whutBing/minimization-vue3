@@ -90,7 +90,7 @@ describe("effect", () => {
         dummy = obj.foo;
       },
       {
-        onStop,
+        onStop,   
       }
     );
 
