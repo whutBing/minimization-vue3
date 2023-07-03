@@ -1,4 +1,8 @@
 import { extend } from "./shared/index";
+
+// 避免硬编码
+let activeEffect;
+let shouldTrack = false;
 class ReactiveEffect {
   private _fn: any;
   deps? = [];
@@ -8,8 +12,19 @@ class ReactiveEffect {
     this._fn = fn;
   }
   run() {
+    if (!this.active) {
+      return this._fn();
+    }
+
+    // 应该收集
+    shouldTrack = true;
     activeEffect = this;
-    return this._fn();
+    const r = this._fn();
+
+    // 重置
+    shouldTrack = false;
+
+    return r;
   }
   stop() {
     if (this.active) {
@@ -26,10 +41,12 @@ function cleanup(effect) {
   effect.deps.forEach((dep) => {
     dep.delete(effect);
   });
+  effect.deps.length = 0;
 }
 const targetMap = new Map();
 export function track(target, key) {
   // target -> key -> dep
+  if (!isTracking()) return;
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     depsMap = new Map();
@@ -43,9 +60,15 @@ export function track(target, key) {
   }
 
   // 反向建立effect => dep的依赖
-  if (!activeEffect) return;
+
+  // 看看 dep 之前有没有添加过，添加过的话 那么就不添加了
+  if (dep.has(activeEffect)) return;
   dep.add(activeEffect);
   activeEffect.deps.push(dep);
+}
+
+function isTracking() {
+  return shouldTrack && activeEffect !== undefined;
 }
 
 export function trigger(target, key) {
@@ -61,8 +84,6 @@ export function trigger(target, key) {
   }
 }
 
-let activeEffect;
-// 避免硬编码
 export function effect(fn, options: any = {}) {
   // fn
   const scheduler = options.scheduler;
