@@ -1,4 +1,4 @@
-import { isReactive, reactive, readonly } from "../reactive";
+import { isProxy, isReactive, reactive, readonly } from "../reactive";
 
 describe("reactive", () => {
   it("happy path", () => {
@@ -6,6 +6,7 @@ describe("reactive", () => {
     const observed = reactive(original);
     expect(observed).not.toBe(original);
     expect(observed.foo).toBe(1);
+    expect(isProxy(observed)).toBe(true);
   });
 
   test("nested reactives", () => {
@@ -30,7 +31,7 @@ describe("readonly", () => {
     expect(wrapped.foo).toBe(1);
   });
 
-  // 期待强制更改readonly时，给出警告
+  // 期待强制更改readonly时，给出警告  eeewee
   it("should call console.warn when set", () => {
     console.warn = jest.fn();
     const user = readonly({
@@ -40,5 +41,4 @@ describe("readonly", () => {
     user.age = 11;
     expect(console.warn).toHaveBeenCalled();
   });
-
 });
