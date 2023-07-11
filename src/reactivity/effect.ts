@@ -3,7 +3,7 @@ import { extend } from "../shared/index";
 // 避免硬编码
 let activeEffect;
 let shouldTrack = false;
-class ReactiveEffect {
+export class ReactiveEffect {
   private _fn: any;
   deps? = [];
   active = true;
