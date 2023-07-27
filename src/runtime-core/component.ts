@@ -2,6 +2,8 @@ import { initProps } from "./componentProps";
 import { shallowReadonly } from "../reactivity/reactive";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 import { emit } from "./componentEmit";
+import { initSlots } from "./componentSlots";
+
 
 export function createComponentInstance(vnode) {
   const component = {
@@ -9,6 +11,7 @@ export function createComponentInstance(vnode) {
     type: vnode.type,
     setupState: {},
     props: {},
+    slots:{},
     emit: () => {},
   };
   component.emit = emit.bind(null, component) as any;
@@ -19,7 +22,7 @@ export function createComponentInstance(vnode) {
 export function setupComponent(instance) {
   // TODO
   initProps(instance, instance.vnode.props);
-  // initSlots()
+  initSlots(instance, instance.vnode.children);
   setupStatefulComponent(instance);
 }
 

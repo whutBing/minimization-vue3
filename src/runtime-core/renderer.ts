@@ -1,20 +1,13 @@
 import { isObject } from "../shared/index";
 import { createComponentInstance, setupComponent } from "./component";
-import { ShapeFlags } from "../shared/shapeFlags";
+import { ShapeFlags } from "../shared/ShapeFlags";
 
 export function render(vnode, container) {
   patch(vnode, container);
 }
 
 function patch(vnode, container) {
-  // console.log(vnode);
   const { shapeFlag } = vnode;
-
-  // if (typeof vnode.type === "string") {
-  //   processElement(vnode, container);
-  // } else if (isObject(vnode.type)) {
-  //   processComponent(vnode, container);
-  // }
   if (shapeFlag & ShapeFlags.ELEMENT) {
     processElement(vnode, container);
   } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
