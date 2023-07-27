@@ -1,22 +1,40 @@
-import { isObject } from "../shared/index";
-import { createComponentInstance, setupComponent } from "./component";
 import { ShapeFlags } from "../shared/ShapeFlags";
+import { createComponentInstance, setupComponent } from "./component";
+import { Fragment, Text } from "./vnode";
 
 export function render(vnode, container) {
   patch(vnode, container);
 }
 
 function patch(vnode, container) {
-  const { shapeFlag } = vnode;
-  if (shapeFlag & ShapeFlags.ELEMENT) {
-    processElement(vnode, container);
-  } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-    processComponent(vnode, container);
+  const { type, shapeFlag } = vnode;
+
+  switch (type) {
+    case Fragment:
+      processFragment(vnode, container);
+      break;
+    case Text:
+      processText(vnode, container);
+      break;
+
+    default:
+      if (shapeFlag & ShapeFlags.ELEMENT) {
+        processElement(vnode, container);
+      } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+        processComponent(vnode, container);
+      }
+      break;
   }
 }
 
-function processComponent(vnode: any, container: any) {
-  mountComponent(vnode, container);
+function processText(vnode: any, container: any) {
+  const { children } = vnode;
+  const textNode = (vnode.el = document.createTextNode(children));
+  container.append(textNode);
+}
+
+function processFragment(vnode: any, container: any) {
+  mountChildren(vnode, container);
 }
 
 function processElement(vnode: any, container: any) {
@@ -29,11 +47,6 @@ function mountElement(vnode: any, container: any) {
   const { children, shapeFlag } = vnode;
 
   // children
-  // if (typeof children === "string") {
-  //   el.textContent = children;
-  // } else if (Array.isArray(children)) {
-  //   mountChildren(vnode, el);
-  // }
   if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
     el.textContent = children;
   } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
@@ -44,7 +57,6 @@ function mountElement(vnode: any, container: any) {
   const { props } = vnode;
   for (const key in props) {
     const val = props[key];
-    // el.setAttribute(key, val);
     const isOn = (key: string) => /^on[A-Z]/.test(key);
     if (isOn(key)) {
       const event = key.slice(2).toLowerCase();
@@ -63,6 +75,10 @@ function mountChildren(vnode, container) {
   });
 }
 
+function processComponent(vnode: any, container: any) {
+  mountComponent(vnode, container);
+}
+
 function mountComponent(initialVNode: any, container) {
   const instance = createComponentInstance(initialVNode);
 
@@ -75,5 +91,6 @@ function setupRenderEffect(instance: any, initialVNode, container) {
   const subTree = instance.render.call(proxy);
 
   patch(subTree, container);
+
   initialVNode.el = subTree.el;
 }
