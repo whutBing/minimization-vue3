@@ -2,4 +2,5 @@
 node_modules
 .vscode
 .DS_Store
-lib
+/lib/
+lib/guide-mini-vue.esm.js
