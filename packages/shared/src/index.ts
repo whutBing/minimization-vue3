@@ -1,5 +1,3 @@
-import { ShapeFlags } from "./ShapeFlags";
-
 export * from "./toDisplayString";
 
 export const extend = Object.assign;
@@ -33,5 +31,4 @@ export const toHandlerKey = (str: string) => {
   return str ? "on" + capitalize(str) : "";
 };
 
-
-export {ShapeFlags} from './ShapeFlags'
+export { ShapeFlags } from "./ShapeFlags";
