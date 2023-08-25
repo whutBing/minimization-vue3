@@ -1,5 +1,5 @@
-import { effect, stop } from "../effect";
-import { reactive } from "../reactive";
+import { effect, stop } from "../src/effect";
+import { reactive } from "../src/reactive";
 
 import { vi } from 'vitest'
 //是一个测试套件，它包含了多个测试用例,也称为测试块

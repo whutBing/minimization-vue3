@@ -1,4 +1,4 @@
-import { isReadonly, readonly } from "../reactive";
+import { isReadonly, readonly } from "../src/reactive";
 import { vi } from 'vitest'
 
 describe("readonly", () => {

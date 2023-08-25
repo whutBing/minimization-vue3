@@ -1,4 +1,4 @@
-import { isProxy, isReactive, reactive, readonly } from "../reactive";
+import { isProxy, isReactive, reactive, readonly } from "../src/reactive";
 import { vi } from 'vitest'
 describe("reactive", () => {
   it("happy path", () => {
